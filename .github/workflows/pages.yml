@@ -19,6 +19,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,11 +33,39 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Check Supabase configuration
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+        shell: bash
+        run: |
+          if [ -z "$VITE_SUPABASE_URL" ]; then
+            echo "::error::VITE_SUPABASE_URL is missing"
+            exit 1
+          fi
+          if [ -z "$VITE_SUPABASE_ANON_KEY" ]; then
+            echo "::error::VITE_SUPABASE_ANON_KEY is missing"
+            exit 1
+          fi
+          echo "Supabase variables are present."
+
       - name: Build VYBE Mini
         run: npm run build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Verify Supabase URL in build
+        shell: bash
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+        run: |
+          if grep -R -F -q "$VITE_SUPABASE_URL" dist/assets; then
+            echo "Supabase URL found in build."
+          else
+            echo "::error::Supabase URL was not found in the built assets."
+            exit 1
+          fi
 
       - name: Setup GitHub Pages
         uses: actions/configure-pages@v5
@@ -49,11 +78,12 @@ jobs:
   deploy:
     needs: build
     runs-on: ubuntu-latest
+
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Deploy site
         id: deployment
         uses: actions/deploy-pages@v4
-
