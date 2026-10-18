@@ -1,0 +1,225 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------ design tokens */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-brand-a: var(--brand-a);
+  --color-brand-b: var(--brand-b);
+  --font-sans: ui-rounded, 'SF Pro Rounded', 'Segoe UI Variable Display', system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', sans-serif;
+}
+
+@theme {
+  --animate-fade-up: fade-up 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  --animate-pop: pop 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  --animate-float: float 14s ease-in-out infinite;
+  --animate-float-slow: float 22s ease-in-out infinite reverse;
+  --animate-pulse-ring: pulse-ring 1.8s ease-out infinite;
+
+  @keyframes fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes pop {
+    from {
+      opacity: 0;
+      transform: scale(0.92);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+      transform: translate3d(4%, 6%, 0) scale(1.08);
+    }
+  }
+  @keyframes pulse-ring {
+    0% {
+      box-shadow: 0 0 0 0 var(--glow-a);
+    }
+    100% {
+      box-shadow: 0 0 0 14px transparent;
+    }
+  }
+}
+
+/* Midnight (default): deep indigo with violet + blue light */
+:root,
+:root[data-theme='midnight'] {
+  color-scheme: dark;
+  --bg: #0a0914;
+  --surface: rgb(255 255 255 / 0.06);
+  --surface-2: rgb(255 255 255 / 0.11);
+  --line: rgb(255 255 255 / 0.1);
+  --ink: #f4f2ff;
+  --muted: #a9a5c8;
+  --brand-a: #8b5cf6;
+  --brand-b: #3b82f6;
+  --glow-a: rgb(139 92 246 / 0.45);
+  --glow-b: rgb(59 130 246 / 0.35);
+}
+
+/* Twilight: warmer, pinker dusk */
+:root[data-theme='twilight'] {
+  color-scheme: dark;
+  --bg: #130a18;
+  --surface: rgb(255 255 255 / 0.06);
+  --surface-2: rgb(255 255 255 / 0.11);
+  --line: rgb(255 255 255 / 0.1);
+  --ink: #fbf1ff;
+  --muted: #bfa6c9;
+  --brand-a: #d946ef;
+  --brand-b: #6366f1;
+  --glow-a: rgb(217 70 239 / 0.4);
+  --glow-b: rgb(99 102 241 / 0.35);
+}
+
+/* Daylight: soft lavender light mode */
+:root[data-theme='daylight'] {
+  color-scheme: light;
+  --bg: #f4f1ff;
+  --surface: rgb(255 255 255 / 0.78);
+  --surface-2: rgb(255 255 255 / 0.95);
+  --line: rgb(40 30 90 / 0.12);
+  --ink: #1b1636;
+  --muted: #6a6590;
+  --brand-a: #7c3aed;
+  --brand-b: #2563eb;
+  --glow-a: rgb(124 58 237 / 0.3);
+  --glow-b: rgb(37 99 235 / 0.25);
+}
+
+@utility bg-brand {
+  background-image: linear-gradient(135deg, var(--brand-a), var(--brand-b));
+}
+@utility text-gradient {
+  background-image: linear-gradient(135deg, var(--brand-a), var(--brand-b));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility glass {
+  background-color: var(--surface);
+  border: 1px solid var(--line);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+@utility pt-safe {
+  padding-top: env(safe-area-inset-top);
+}
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* ------------------------------------------------------------------ base */
+html,
+body,
+#root {
+  min-height: 100%;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+button,
+[role='button'] {
+  cursor: pointer;
+  touch-action: manipulation;
+}
+/* 16px inputs stop iOS Safari zooming the page when a field is focused */
+input,
+textarea {
+  font-size: 16px;
+}
+::selection {
+  background: color-mix(in oklab, var(--brand-a) 45%, transparent);
+}
+:focus-visible {
+  outline: 2px solid var(--brand-a);
+  outline-offset: 2px;
+}
+
+/* thin, themed scrollbars */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+}
+
+/* Seek / volume slider */
+.vybe-range {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  outline: none;
+  background: rgb(255 255 255 / 0.25);
+}
+.vybe-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 0 4px var(--glow-a);
+  border: 0;
+}
+.vybe-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 0 0 4px var(--glow-a);
+  border: 0;
+}
+.vybe-range:disabled::-webkit-slider-thumb {
+  width: 10px;
+  height: 10px;
+  box-shadow: none;
+}
+.vybe-range:disabled::-moz-range-thumb {
+  width: 10px;
+  height: 10px;
+  box-shadow: none;
+}
+
+/* The YouTube iframe fills its box */
+.yt-host iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
